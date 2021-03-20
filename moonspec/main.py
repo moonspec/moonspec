@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import sys
-from typing import Dict
+from typing import Dict, Set
 
 from moonspec import _MOONSPEC_RUNTIME_STATE, MOONSPEC_VERSION
 from moonspec.api.interface.fs import PathApi
@@ -33,6 +33,33 @@ def _deep_merge(source: Dict, destination: Dict) -> Dict:
             destination[key] = value
 
     return destination
+
+
+def _read_role_file(path: str) -> Set[str]:
+    if not PathApi.is_file(path) or not PathApi.can_read(path):
+        raise RuntimeError('Role file <%s> is not readable' % path)
+
+    LOGGER.debug('Reading roles from file <%s>', path)
+
+    roles = set()
+    with open(path, 'r') as f:
+        lines = f.readlines()
+
+        for line in lines:
+            c = line.strip()
+
+            if 0 == len(c):
+                continue
+
+            if c[0] == '#':
+                continue
+
+            roles.add(c)
+
+    if len(roles) == 0:
+        return set()
+
+    return roles
 
 
 class App:
@@ -114,7 +141,13 @@ class App:
         else:
             LOGGER.info('Test suite data directory not defined, state persistence of fact values disabled')
 
-        roles = set(suite_config['roles'])
+        if isinstance(suite_config['roles'], str):
+            roles = _read_role_file(suite_config['roles'])
+        elif isinstance(suite_config['roles'], list):
+            roles = set(suite_config['roles'])
+        else:
+            raise RuntimeError('Suite roles must be a string - path to dynamic role file, or array - list of roles')
+
         LOGGER.debug('Suite target roles are %s', roles)
 
         fail_fast = suite_config['fail_fast']
