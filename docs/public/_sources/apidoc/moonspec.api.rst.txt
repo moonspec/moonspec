@@ -1,0 +1,34 @@
+moonspec.api package
+====================
+
+.. automodule:: moonspec.api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   moonspec.api.interface
+
+Submodules
+----------
+
+moonspec.api.fact module
+------------------------
+
+.. automodule:: moonspec.api.fact
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+moonspec.api.subject module
+---------------------------
+
+.. automodule:: moonspec.api.subject
+   :members:
+   :undoc-members:
+   :show-inheritance:

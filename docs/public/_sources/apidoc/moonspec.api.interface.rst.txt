@@ -1,0 +1,74 @@
+moonspec.api.interface package
+==============================
+
+.. automodule:: moonspec.api.interface
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+moonspec.api.interface.facter module
+------------------------------------
+
+.. automodule:: moonspec.api.interface.facter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+moonspec.api.interface.fs module
+--------------------------------
+
+.. automodule:: moonspec.api.interface.fs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+moonspec.api.interface.host module
+----------------------------------
+
+.. automodule:: moonspec.api.interface.host
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+moonspec.api.interface.inet module
+----------------------------------
+
+.. automodule:: moonspec.api.interface.inet
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+moonspec.api.interface.libvirtd module
+--------------------------------------
+
+.. automodule:: moonspec.api.interface.libvirtd
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+moonspec.api.interface.osqueryd module
+--------------------------------------
+
+.. automodule:: moonspec.api.interface.osqueryd
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+moonspec.api.interface.ssl module
+---------------------------------
+
+.. automodule:: moonspec.api.interface.ssl
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+moonspec.api.interface.systemd module
+-------------------------------------
+
+.. automodule:: moonspec.api.interface.systemd
+   :members:
+   :undoc-members:
+   :show-inheritance:

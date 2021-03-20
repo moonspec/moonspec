@@ -1,0 +1,7 @@
+pyproject.toml
+*.egg-info
+.venv
+tmp
+.mypy_cache
+dist
+local

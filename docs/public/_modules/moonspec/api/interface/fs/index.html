@@ -1,0 +1,472 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>moonspec.api.interface.fs &#8212; moonspec 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../../search/" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for moonspec.api.interface.fs</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">Pattern</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">moonspec.api._utils</span> <span class="kn">import</span> <span class="n">_get_pwd_user_by_name</span><span class="p">,</span> <span class="n">_get_pwd_group_by_name</span>
+
+
+<div class="viewcode-block" id="Mount"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.Mount">[docs]</a><span class="k">class</span> <span class="nc">Mount</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Holds information about a file system mount</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">dev</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1">#: mount device</span>
+            <span class="n">mount</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1">#: mount type</span>
+            <span class="n">fstype</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>  <span class="c1">#: file system type</span>
+            <span class="n">options</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>  <span class="c1"># file system mount options</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dev</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">dev</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mount</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">mount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fstype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fstype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;Mount&lt;</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fstype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MountCollection"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.MountCollection">[docs]</a><span class="k">class</span> <span class="nc">MountCollection</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mounts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Mount</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mounts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Mount</span><span class="p">]</span> <span class="o">=</span> <span class="n">mounts</span>
+
+<div class="viewcode-block" id="MountCollection.has_mount"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.MountCollection.has_mount">[docs]</a>    <span class="k">def</span> <span class="nf">has_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mount_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mounts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">mount</span> <span class="o">==</span> <span class="n">mount_path</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="MountCollection.has_dev"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.MountCollection.has_dev">[docs]</a>    <span class="k">def</span> <span class="nf">has_dev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mounts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">dev</span> <span class="o">==</span> <span class="n">dev</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="PathApi"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi">[docs]</a><span class="k">class</span> <span class="nc">PathApi</span><span class="p">:</span>
+<div class="viewcode-block" id="PathApi.is_owned_by_uid"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_owned_by_uid">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_owned_by_uid</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">uid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;File not found - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">FileSystemApi</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">st_uid</span> <span class="o">==</span> <span class="n">uid</span></div>
+
+<div class="viewcode-block" id="PathApi.is_owned_by_user"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_owned_by_user">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_owned_by_user</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">pwd_entry</span> <span class="o">=</span> <span class="n">_get_pwd_user_by_name</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pwd_entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_owned_by_uid</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pwd_entry</span><span class="o">.</span><span class="n">pw_uid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.is_owned_by_gid"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_owned_by_gid">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_owned_by_gid</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;File not found - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">FileSystemApi</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">st_gid</span> <span class="o">==</span> <span class="n">gid</span></div>
+
+<div class="viewcode-block" id="PathApi.is_owned_by_group"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_owned_by_group">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_owned_by_group</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">pwd_entry</span> <span class="o">=</span> <span class="n">_get_pwd_group_by_name</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pwd_entry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_owned_by_uid</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pwd_entry</span><span class="o">.</span><span class="n">gr_gid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.exists_owned_by_u"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.exists_owned_by_u">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">exists_owned_by_u</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_owned_by_user</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.exists_owned_by_g"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.exists_owned_by_g">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">exists_owned_by_g</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_owned_by_group</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.exists_owned_by_ug"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.exists_owned_by_ug">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">exists_owned_by_ug</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_owned_by_user</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span> <span class="ow">and</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_owned_by_group</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.can_read"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.can_read">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">can_read</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">R_OK</span><span class="p">,</span> <span class="n">effective_ids</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">access</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">supports_effective_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.can_write"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.can_write">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">can_write</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">,</span> <span class="n">effective_ids</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">access</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">supports_effective_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.can_exec"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.can_exec">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">can_exec</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">X_OK</span><span class="p">,</span> <span class="n">effective_ids</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">access</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">supports_effective_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.exists"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.exists">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.is_file"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.is_link"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_link">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_link</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.is_mount"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_mount">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_mount</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">ismount</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.is_dir"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_dir">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_dir</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.is_empty"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_empty">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;File does not exist - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="PathApi.get_size_b"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.get_size_b">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_size_b</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;File &lt;</span><span class="si">%s</span><span class="s1">&gt; does not exist or is not readable&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.has_extension"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.has_extension">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">has_extension</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PathApi.is_smaller_than"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_smaller_than">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_smaller_than</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size_b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;File &lt;</span><span class="si">%s</span><span class="s1">&gt; does not exist or is not readable&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">size_b</span></div>
+
+<div class="viewcode-block" id="PathApi.is_larger_than"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_larger_than">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_larger_than</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size_b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;File &lt;</span><span class="si">%s</span><span class="s1">&gt; does not exist or is not readable&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">size_b</span></div>
+
+<div class="viewcode-block" id="PathApi.is_of_size"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.PathApi.is_of_size">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_of_size</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size_b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;File &lt;</span><span class="si">%s</span><span class="s1">&gt; does not exist or is not readable&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="n">size_b</span></div></div>
+
+
+<div class="viewcode-block" id="FileSystemApi"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi">[docs]</a><span class="k">class</span> <span class="nc">FileSystemApi</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :ivar path: PathApi: instance of PathApi</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">PathApi</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FileSystemApi.stat"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.stat">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">stat</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">os</span><span class="o">.</span><span class="n">stat_result</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileSystemApi.hash_file"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.hash_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">hash_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">hash_names</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">hash_names</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Requested file hash of &lt;</span><span class="si">%s</span><span class="s1">&gt; with no hash names&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;File &lt;</span><span class="si">%s</span><span class="s1">&gt; does not exist or is not readable&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">instances</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">hash_name</span> <span class="ow">in</span> <span class="n">hash_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">hash_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">algorithms_available</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Can not hash &lt;</span><span class="si">%s</span><span class="s1">&gt;, algorithm not available - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">hash_name</span><span class="p">))</span>
+            <span class="n">instances</span><span class="p">[</span><span class="n">hash_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">hash_name</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">65536</span><span class="p">)</span>  <span class="c1"># 64k chunks</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="k">for</span> <span class="n">hash_instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">hash_instance</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hash_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">instances</span><span class="p">[</span><span class="n">hash_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="FileSystemApi.all_files_in"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.all_files_in">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">all_files_in</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">matcher</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">Pattern</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">matcher</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Matcher is expected to be Callable or Pattern&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Path does not exist - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">matcher</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">matcher</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
+                    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">files</span></div>
+
+    <span class="c1"># noinspection DuplicatedCode</span>
+<div class="viewcode-block" id="FileSystemApi.line_in_file"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.line_in_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">line_in_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">matcher</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">Pattern</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">matcher</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Matcher is expected to be Callable or Pattern&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Path does not exist - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Path is not a file or can not be read - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f_line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">f_line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">matcher</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">line</span>
+                <span class="k">elif</span> <span class="n">matcher</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">line</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="c1"># noinspection DuplicatedCode</span>
+<div class="viewcode-block" id="FileSystemApi.lines_in_file"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.lines_in_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">lines_in_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">matcher</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">Pattern</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">matcher</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Matcher is expected to be Callable or Pattern&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Path does not exist - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Path is not a file or can not be read - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">matching_lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f_line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">f_line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matcher</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">matcher</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">matching_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">matcher</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                    <span class="n">matching_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">matching_lines</span></div>
+
+<div class="viewcode-block" id="FileSystemApi.space_free"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.space_free">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">space_free</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Path does not exist - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">shutil</span><span class="o">.</span><span class="n">disk_usage</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">free</span></div>
+
+<div class="viewcode-block" id="FileSystemApi.space_used"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.space_used">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">space_used</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Path does not exist - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">shutil</span><span class="o">.</span><span class="n">disk_usage</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">used</span></div>
+
+<div class="viewcode-block" id="FileSystemApi.space_total"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.space_total">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">space_total</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Path does not exist - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">shutil</span><span class="o">.</span><span class="n">disk_usage</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">total</span></div>
+
+<div class="viewcode-block" id="FileSystemApi.space_gt_threshold"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.space_gt_threshold">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">space_gt_threshold</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">threshold_percent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">threshold_percent</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">threshold_percent</span> <span class="o">&gt;</span> <span class="mf">100.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;threshold_percent must be a number larger than 0 and less. or equal to 100&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Path does not exist - &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="n">usage</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">disk_usage</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">used</span> <span class="o">/</span> <span class="n">usage</span><span class="o">.</span><span class="n">total</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold_percent</span> <span class="o">/</span> <span class="mi">100</span></div>
+
+<div class="viewcode-block" id="FileSystemApi.mounts"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi.mounts">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">mounts</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MountCollection</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">is_file</span><span class="p">(</span><span class="s1">&#39;/etc/mtab&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">PathApi</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="s1">&#39;/etc/mtab&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;/etc/mtab does not exist or is not readable&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/etc/mtab&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">mounts</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mount</span> <span class="ow">in</span> <span class="n">mounts</span><span class="p">:</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">mount</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+            <span class="n">options</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="s1">&#39;&#39;</span> <span class="o">!=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+                <span class="n">o_kv_pairs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">o_pair</span> <span class="ow">in</span> <span class="n">o_kv_pairs</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">o_pair</span><span class="p">):</span>
+                        <span class="n">options</span><span class="p">[</span><span class="n">o_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">options</span><span class="p">[</span><span class="n">o_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">o_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Mount</span><span class="p">(</span>
+                <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">options</span>
+            <span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">MountCollection</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../">moonspec</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart/">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../apidoc/moonspec.api/">moonspec.api package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../">Documentation overview</a><ul>
+  <li><a href="../../../../">Module code</a><ul>
+  <li><a href="../../">moonspec.api</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Matīss Treinis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

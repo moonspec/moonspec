@@ -1,0 +1,691 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>moonspec.api.subject &#8212; moonspec 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../search/" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for moonspec.api.subject</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">Pattern</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">moonspec</span> <span class="kn">import</span> <span class="n">_MOONSPEC_RUNTIME_STATE</span>
+
+
+<span class="c1"># TODO: what was I thinking...</span>
+<div class="viewcode-block" id="ComparatorExpectations"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.ComparatorExpectations">[docs]</a><span class="k">class</span> <span class="nc">ComparatorExpectations</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">ABSENT</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">PRESENT</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">EQUAL</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">NOT_EQUAL</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">NOT_CHANGED</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">SELF_IS_NUMBER</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">OTHER_IS_NUMBER</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">LT</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">GT</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">LTE</span> <span class="o">=</span> <span class="mi">9</span>
+    <span class="n">GTE</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">EMPTY</span> <span class="o">=</span> <span class="mi">11</span>
+    <span class="n">NOT_EMPTY</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">CB</span> <span class="o">=</span> <span class="mi">13</span>
+    <span class="n">TYPE</span> <span class="o">=</span> <span class="mi">14</span>
+    <span class="n">ANY_OF</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">NONE_OF</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">CONTAIN_ANY_OF</span> <span class="o">=</span> <span class="mi">17</span>
+    <span class="n">CONTAIN_NONE_OF</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">CONTAIN_ALL_OF</span> <span class="o">=</span> <span class="mi">19</span>
+    <span class="n">HAVE_KEYS</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">NOT_HAVE_KEYS</span> <span class="o">=</span> <span class="mi">21</span>
+    <span class="n">MATCH</span> <span class="o">=</span> <span class="mi">22</span>
+    <span class="n">NOT_MATCH</span> <span class="o">=</span> <span class="mi">23</span>
+    <span class="n">CONTAIN_MATCH</span> <span class="o">=</span> <span class="mi">24</span>
+    <span class="n">NOT_CONTAIN_MATCH</span> <span class="o">=</span> <span class="mi">25</span>
+    <span class="n">LENGTH</span> <span class="o">=</span> <span class="mi">26</span>
+    <span class="n">NOT_LENGTH</span> <span class="o">=</span> <span class="mi">27</span></div>
+
+
+<div class="viewcode-block" id="SubjectExpectationException"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.SubjectExpectationException">[docs]</a><span class="k">class</span> <span class="nc">SubjectExpectationException</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">expected_value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">actual_value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+                 <span class="n">expectation</span><span class="p">:</span> <span class="n">ComparatorExpectations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identity</span> <span class="o">=</span> <span class="n">identity</span> <span class="ow">or</span> <span class="s1">&#39;value&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span> <span class="o">=</span> <span class="n">expected_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span> <span class="o">=</span> <span class="n">actual_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span> <span class="o">=</span> <span class="n">expectation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get_and_clear_scope_description</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">EQUAL</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to equal &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_EQUAL</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to not equal &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">ABSENT</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to be absent, actual values is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">PRESENT</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to be present, actually absent&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">identity</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_CHANGED</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> historic value &lt;</span><span class="si">%s</span><span class="s1">&gt; to match current value &lt;</span><span class="si">%s</span><span class="s1">&gt;, values differ&#39;</span> \
+                   <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">SELF_IS_NUMBER</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to be float, integer or numeric string, actual values is &lt;</span><span class="si">%s</span><span class="s1">&gt; of type </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">,</span>
+                <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">OTHER_IS_NUMBER</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> opposite value to be float, integer or numeric string, &#39;</span> \
+                   <span class="s1">&#39;actual values is &lt;</span><span class="si">%s</span><span class="s1">&gt; of type </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">,</span>
+                       <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">)</span>
+                   <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">LT</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> &lt;</span><span class="si">%s</span><span class="s1">&gt; to be less than &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> \
+                   <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">GT</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> &lt;</span><span class="si">%s</span><span class="s1">&gt; to be greater than &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> \
+                   <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">LTE</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> &lt;</span><span class="si">%s</span><span class="s1">&gt; to be less than or equal to &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> \
+                   <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">GTE</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> &lt;</span><span class="si">%s</span><span class="s1">&gt; to be greater than or equal to &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> \
+                   <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">EMPTY</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to be empty, actual values is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_EMPTY</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to not be empty, actually empty&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CB</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> with value &lt;</span><span class="si">%s</span><span class="s1">&gt; to match using custom matcher&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">TYPE</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to be of type &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual values is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">ANY_OF</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to be any of &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NONE_OF</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to be none of &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_ANY_OF</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to contain any of &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_NONE_OF</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to contain none of &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_ALL_OF</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to contain all of of &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">HAVE_KEYS</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to have keys &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_HAVE_KEYS</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to not have keys &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">MATCH</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to match &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_MATCH</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to not match &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_MATCH</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to contain match &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_CONTAIN_MATCH</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> not contain match &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual value is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">LENGTH</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to have length &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual length is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_LENGTH</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Expected </span><span class="si">%s</span><span class="s1"> to not have length &lt;</span><span class="si">%s</span><span class="s1">&gt;, actual length is &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_value</span>
+            <span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Unhandled comparator expectation - </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">expectation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Subject"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject">[docs]</a><span class="k">class</span> <span class="nc">Subject</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">identity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span> <span class="o">=</span> <span class="n">identity</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_value</span><span class="p">(</span><span class="n">something</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">something</span><span class="p">,</span> <span class="n">Subject</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">something</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">something</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_number_value</span><span class="p">(</span><span class="n">something</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">Subject</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">something</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isdecimal</span><span class="p">():</span>
+                <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_get_numeric_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="n">self_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_number_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">other_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_number_value</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">other_num</span> <span class="ow">is</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">other</span><span class="p">),</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">OTHER_IS_NUMBER</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">self_num</span> <span class="ow">is</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">SELF_IS_NUMBER</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span>
+
+    <span class="c1"># -&gt; Expectations for values</span>
+<div class="viewcode-block" id="Subject.should_be_present"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_present">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_present</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">PRESENT</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_absent"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_absent">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_absent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">ABSENT</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_equal"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_equal">[docs]</a>    <span class="k">def</span> <span class="nf">should_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">other_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="n">other_value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">other_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">EQUAL</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_not_equal"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_not_equal">[docs]</a>    <span class="k">def</span> <span class="nf">should_not_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">other_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">other_value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">other_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_EQUAL</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_empty"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_empty">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Value of type </span><span class="si">%s</span><span class="s1"> can not be tested for empty&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Subject.should_not_be_empty"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_not_be_empty">[docs]</a>    <span class="k">def</span> <span class="nf">should_not_be_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_EMPTY</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">set</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_EMPTY</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Value of type </span><span class="si">%s</span><span class="s1"> can not be tested for not_empty&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_lt"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_lt">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_lt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_numeric_comp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">other_num</span> <span class="o">&lt;=</span> <span class="n">self_num</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">LT</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_gt"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_gt">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_gt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_numeric_comp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">other_num</span> <span class="o">&gt;=</span> <span class="n">self_num</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">GT</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_lte"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_lte">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_lte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_numeric_comp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">other_num</span> <span class="o">&lt;</span> <span class="n">self_num</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">LTE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_gte"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_gte">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_gte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_numeric_comp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">other_num</span> <span class="o">&gt;</span> <span class="n">self_num</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">other_num</span><span class="p">,</span> <span class="n">self_num</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">GTE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_true"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_true">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_true</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">TYPE</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">EQUAL</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_false"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_false">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_false</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">TYPE</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">EQUAL</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_any_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_any_of">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_any_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">it</span><span class="p">):</span>
+                <span class="k">return</span>
+        <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">ANY_OF</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_be_none_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_be_none_of">[docs]</a>    <span class="k">def</span> <span class="nf">should_be_none_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_value</span><span class="p">(</span><span class="n">it</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                                  <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NONE_OF</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_contain_any_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_contain_any_of">[docs]</a>    <span class="k">def</span> <span class="nf">should_contain_any_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                    <span class="k">return</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_ANY_OF</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                    <span class="k">return</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_ANY_OF</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Expected set, list or map, can not check against contents of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Subject.should_contain_none_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_contain_none_of">[docs]</a>    <span class="k">def</span> <span class="nf">should_contain_none_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                                      <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_NONE_OF</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                                      <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_NONE_OF</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Expected set, list or map, can not check against contents of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Subject.should_contain_all_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_contain_all_of">[docs]</a>    <span class="k">def</span> <span class="nf">should_contain_all_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                                      <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_ALL_OF</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                                      <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_ALL_OF</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Expected set, list or map, can not check against contents of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Subject.should_have_keys"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_have_keys">[docs]</a>    <span class="k">def</span> <span class="nf">should_have_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Expected dict, can not check against keys of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                                  <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">HAVE_KEYS</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_not_have_keys"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_not_have_keys">[docs]</a>    <span class="k">def</span> <span class="nf">should_not_have_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Expected dict, can not check against keys of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                                  <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_HAVE_KEYS</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_match"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_match">[docs]</a>    <span class="k">def</span> <span class="nf">should_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Can not match against type </span><span class="si">%s</span><span class="s1">, expected value to be string&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">pattern</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">MATCH</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_not_match"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_not_match">[docs]</a>    <span class="k">def</span> <span class="nf">should_not_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Can not match against type </span><span class="si">%s</span><span class="s1">, expected value to be string&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">pattern</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_MATCH</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_contain_match"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_contain_match">[docs]</a>    <span class="k">def</span> <span class="nf">should_contain_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Can not match against type </span><span class="si">%s</span><span class="s1">, expected value to be string&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">pattern</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CONTAIN_MATCH</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_not_contain_match"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_not_contain_match">[docs]</a>    <span class="k">def</span> <span class="nf">should_not_contain_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Can not match against type </span><span class="si">%s</span><span class="s1">, expected value to be string&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">pattern</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_CONTAIN_MATCH</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_have_length"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_have_length">[docs]</a>    <span class="k">def</span> <span class="nf">should_have_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="n">length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">LENGTH</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should_not_have_length"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should_not_have_length">[docs]</a>    <span class="k">def</span> <span class="nf">should_not_have_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="n">length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                                              <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">NOT_LENGTH</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.should"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.should">[docs]</a>    <span class="k">def</span> <span class="nf">should</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matcher</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">matcher</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CB</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">ex</span> <span class="o">=</span> <span class="n">SubjectExpectationException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ComparatorExpectations</span><span class="o">.</span><span class="n">CB</span><span class="p">)</span>
+            <span class="n">ex</span><span class="o">.</span><span class="n">__cause__</span> <span class="o">=</span> <span class="n">e</span>
+            <span class="k">raise</span> <span class="n">ex</span></div>
+
+    <span class="c1"># &lt;- Expectations for values</span>
+    <span class="c1"># -&gt; Aliases with to_* for the expectations</span>
+
+<div class="viewcode-block" id="Subject.to_be_present"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_present">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_present</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_present</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_absent"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_absent">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_absent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_absent</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Subject.to_equal"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_equal">[docs]</a>    <span class="k">def</span> <span class="nf">to_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_equal</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_not_equal"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_not_equal">[docs]</a>    <span class="k">def</span> <span class="nf">to_not_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_not_equal</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_empty"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_empty">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_empty</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Subject.to_not_be_empty"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_not_be_empty">[docs]</a>    <span class="k">def</span> <span class="nf">to_not_be_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_not_be_empty</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_lt"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_lt">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_lt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_lt</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_gt"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_gt">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_gt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_gt</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_lte"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_lte">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_lte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_lte</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_gte"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_gte">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_gte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_gte</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to">[docs]</a>    <span class="k">def</span> <span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matcher</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should</span><span class="p">(</span><span class="n">matcher</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_true"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_true">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_true</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_true</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_false"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_false">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_false</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_false</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_any_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_any_of">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_any_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_any_of</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_be_none_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_be_none_of">[docs]</a>    <span class="k">def</span> <span class="nf">to_be_none_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_be_none_of</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_contain_any_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_contain_any_of">[docs]</a>    <span class="k">def</span> <span class="nf">to_contain_any_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_contain_any_of</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_contain_none_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_contain_none_of">[docs]</a>    <span class="k">def</span> <span class="nf">to_contain_none_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_contain_none_of</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_contain_all_of"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_contain_all_of">[docs]</a>    <span class="k">def</span> <span class="nf">to_contain_all_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_contain_all_of</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_have_keys"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_have_keys">[docs]</a>    <span class="k">def</span> <span class="nf">to_have_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_have_keys</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_not_have_keys"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_not_have_keys">[docs]</a>    <span class="k">def</span> <span class="nf">to_not_have_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_not_have_keys</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_match"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_match">[docs]</a>    <span class="k">def</span> <span class="nf">to_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_match</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_not_match"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_not_match">[docs]</a>    <span class="k">def</span> <span class="nf">to_not_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_not_match</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_contain_match"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_contain_match">[docs]</a>    <span class="k">def</span> <span class="nf">to_contain_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_contain_match</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_not_contain_match"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_not_contain_match">[docs]</a>    <span class="k">def</span> <span class="nf">to_not_contain_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_not_contain_match</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_have_length"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_have_length">[docs]</a>    <span class="k">def</span> <span class="nf">to_have_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_have_length</span><span class="p">(</span><span class="n">length</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.to_not_have_length"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.to_not_have_length">[docs]</a>    <span class="k">def</span> <span class="nf">to_not_have_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_not_have_length</span><span class="p">(</span><span class="n">length</span><span class="p">)</span></div>
+
+    <span class="c1"># &lt;- Aliases with to_*</span>
+    <span class="c1"># -&gt; Utility methods</span>
+
+<div class="viewcode-block" id="Subject.lookup"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.lookup">[docs]</a>    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Subject&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Non-string value used as lookup key to access </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">)</span>
+
+        <span class="n">local_identity</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">key</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Subject</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">identity</span><span class="o">=</span><span class="n">local_identity</span><span class="p">)</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">num_levels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">current_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_levels</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">is_last</span> <span class="o">=</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_levels</span> <span class="o">-</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">current_root</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Subject</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">identity</span><span class="o">=</span><span class="n">local_identity</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">is_last</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Subject</span><span class="p">(</span><span class="n">current_root</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">local_identity</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_root</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Subject</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">identity</span><span class="o">=</span><span class="n">local_identity</span><span class="p">)</span>
+
+            <span class="n">current_root</span> <span class="o">=</span> <span class="n">current_root</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Subject</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">identity</span><span class="o">=</span><span class="n">local_identity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Subject.at"><a class="viewcode-back" href="../../../../apidoc/moonspec.api/#moonspec.api.subject.Subject.at">[docs]</a>    <span class="k">def</span> <span class="nf">at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Subject&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Non-integer value used as index to access &lt;</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">)</span>
+
+        <span class="n">local_identity</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">[</span><span class="si">%d</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_identity</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_identity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Subject</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">identity</span><span class="o">=</span><span class="n">local_identity</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Subject</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">identity</span><span class="o">=</span><span class="n">local_identity</span><span class="p">)</span></div></div>
+    <span class="c1"># &lt;- Utility methods</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../">moonspec</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart/">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../apidoc/moonspec.api/">moonspec.api package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../">Documentation overview</a><ul>
+  <li><a href="../../../">Module code</a><ul>
+  <li><a href="../">moonspec.api</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Matīss Treinis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

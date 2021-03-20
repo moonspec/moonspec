@@ -1,0 +1,19 @@
+[[source]]
+url = 'https://pypi.org/simple'
+verify_ssl = true
+name = 'pypi'
+
+[packages]
+moonspec = {editable = true, path = '.'}
+requests = ">=2.20.0"
+cryptography = ">=3.0"
+
+[dev-packages]
+mypy = "*"
+sphinx = "*"
+systemd = "*"
+osquery = "*"
+libvirt-python = ">=6.7.0"
+
+[requires]
+python_version = '3.7'
