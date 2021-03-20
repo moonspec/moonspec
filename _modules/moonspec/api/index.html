@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>moonspec.api &#8212; moonspec 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for moonspec.api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The `moonspec.api` package contains all public APIs useful for writing specifications.</span>
+
+<span class="sd">This package also exports global instance of `moonspec.api.Api` as var `api` for you to use in your spec files to</span>
+<span class="sd">access APIs various APIs useful for host testing using fluent interfaces, for example,</span>
+<span class="sd">`api.fs.hash_file(&#39;/example.txt&#39;)`.</span>
+
+<span class="sd">**Basic import**</span>
+
+<span class="sd">This import contains all the basic members you might need to write your specifications.</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from moonspec.api import (api, any_of, capture,</span>
+<span class="sd">                              spec, describe, expect,</span>
+<span class="sd">                              fact, historic_fact, maybe)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">moonspec</span> <span class="kn">import</span> <span class="n">_MOONSPEC_RUNTIME_STATE</span>
+<span class="kn">from</span> <span class="nn">moonspec.api.fact</span> <span class="kn">import</span> <span class="n">Fact</span><span class="p">,</span> <span class="n">HistoricFact</span>
+<span class="kn">from</span> <span class="nn">moonspec.api.interface.fs</span> <span class="kn">import</span> <span class="n">FileSystemApi</span>
+<span class="kn">from</span> <span class="nn">moonspec.api.interface.host</span> <span class="kn">import</span> <span class="n">HostApi</span>
+<span class="kn">from</span> <span class="nn">moonspec.api.interface.inet</span> <span class="kn">import</span> <span class="n">InetApi</span>
+<span class="kn">from</span> <span class="nn">moonspec.api.interface.ssl</span> <span class="kn">import</span> <span class="n">SSLApi</span>
+<span class="kn">from</span> <span class="nn">moonspec.api.subject</span> <span class="kn">import</span> <span class="n">Subject</span><span class="p">,</span> <span class="n">SubjectExpectationException</span><span class="p">,</span> <span class="n">ComparatorExpectations</span>
+
+
+<div class="viewcode-block" id="Api"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.Api">[docs]</a><span class="k">class</span> <span class="nc">Api</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">:</span> <span class="n">HostApi</span> <span class="o">=</span> <span class="n">HostApi</span><span class="p">()</span>  <span class="c1">#: Access information related to local host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fs</span><span class="p">:</span> <span class="n">FileSystemApi</span> <span class="o">=</span> <span class="n">FileSystemApi</span><span class="p">()</span>  <span class="c1">#: Access information related to local file systems</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">:</span> <span class="n">InetApi</span> <span class="o">=</span> <span class="n">InetApi</span><span class="p">()</span>  <span class="c1">#: Access network resources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl</span><span class="p">:</span> <span class="n">SSLApi</span> <span class="o">=</span> <span class="n">SSLApi</span><span class="p">()</span>  <span class="c1">#: Query various SSL related items</span></div>
+
+
+<div class="viewcode-block" id="capture"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.capture">[docs]</a><span class="k">def</span> <span class="nf">capture</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">roles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Capture a fact to be used in tests or to be checked for state changes when executing</span>
+<span class="sd">    specifications with state persistence.</span>
+
+<span class="sd">    :param key: globally unique identifier of a fact.</span>
+<span class="sd">    :param roles: list of zero or more roles this fact should be captured for.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__capture_imp</span><span class="p">(</span><span class="n">function_ref</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">capture_key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="n">capture_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">function_ref</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;capture_&#39;</span><span class="p">):</span>
+                <span class="n">capture_key</span> <span class="o">=</span> <span class="n">function_ref</span><span class="o">.</span><span class="vm">__name__</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Capture: decorator key must be set or function name must start with capture_&#39;</span><span class="p">)</span>
+
+        <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">register_capture</span><span class="p">(</span><span class="n">capture_key</span><span class="p">,</span> <span class="n">function_ref</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">roles</span> <span class="ow">or</span> <span class="p">[]))</span>
+
+    <span class="k">return</span> <span class="n">__capture_imp</span></div>
+
+
+<div class="viewcode-block" id="spec"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.spec">[docs]</a><span class="k">def</span> <span class="nf">spec</span><span class="p">(</span><span class="n">roles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">__spec_imp</span><span class="p">(</span><span class="n">function_ref</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">register_spec</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">roles</span> <span class="ow">or</span> <span class="p">[]),</span> <span class="n">function_ref</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">__spec_imp</span></div>
+
+
+<div class="viewcode-block" id="describe"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.describe">[docs]</a><span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">set_scope_description</span><span class="p">(</span><span class="n">description</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fact"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.fact">[docs]</a><span class="k">def</span> <span class="nf">fact</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Fact</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">has_fact</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Fact</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Fact</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">get_fact_value</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="historic_fact"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.historic_fact">[docs]</a><span class="k">def</span> <span class="nf">historic_fact</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HistoricFact</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">has_historic_fact</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">HistoricFact</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">HistoricFact</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">get_historic_fact_value</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="expect"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.expect">[docs]</a><span class="k">def</span> <span class="nf">expect</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">identity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Subject</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Subject</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">identity</span><span class="o">=</span><span class="n">identity</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="maybe"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.maybe">[docs]</a><span class="k">def</span> <span class="nf">maybe</span><span class="p">(</span><span class="n">assertion</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">assertion_args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">assertion</span><span class="p">(</span><span class="o">*</span><span class="n">assertion_args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">register_soft_failure</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="any_of"><a class="viewcode-back" href="../../../apidoc/moonspec.api/#moonspec.api.any_of">[docs]</a><span class="k">def</span> <span class="nf">any_of</span><span class="p">(</span><span class="o">*</span><span class="n">assertions</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">callable_ref</span> <span class="ow">in</span> <span class="n">assertions</span><span class="p">:</span>
+        <span class="c1"># noinspection PyBroadException</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">callable_ref</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+    <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+
+    <span class="n">scope_desc</span> <span class="o">=</span> <span class="n">_MOONSPEC_RUNTIME_STATE</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">get_and_clear_scope_description</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">scope_desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">scope_desc</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;All expectations for any_of failed&#39;</span><span class="p">)</span></div>
+
+
+<span class="n">api</span><span class="p">:</span> <span class="n">Api</span> <span class="o">=</span> <span class="n">Api</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../">moonspec</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart/">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidoc/moonspec.api/">moonspec.api package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../">Documentation overview</a><ul>
+  <li><a href="../../">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Matīss Treinis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

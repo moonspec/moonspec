@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>moonspec.api.interface.osqueryd &#8212; moonspec 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../../search/" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for moonspec.api.interface.osqueryd</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;moonspec&#39;</span><span class="p">)</span>
+
+<span class="n">has_osquery</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">osquery</span>  <span class="c1"># type: ignore</span>
+    <span class="kn">from</span> <span class="nn">osquery</span> <span class="kn">import</span> <span class="n">SpawnInstance</span>
+    <span class="kn">from</span> <span class="nn">osquery.extensions.ExtensionManager</span> <span class="kn">import</span> <span class="n">Client</span>  <span class="c1"># type: ignore</span>
+
+    <span class="n">has_osquery</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">has_osquery</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">SpawnInstance</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">Client</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="OSQueryApi"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.osqueryd.OSQueryApi">[docs]</a><span class="k">class</span> <span class="nc">OSQueryApi</span><span class="p">:</span>
+    <span class="n">_instance_ref</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="OSQueryApi.supports"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.osqueryd.OSQueryApi.supports">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">supports</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">has_osquery</span></div>
+
+    <span class="c1"># TODO: thread safety</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_instance</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">SpawnInstance</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_osquery</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;OSQuery is not supported&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">OSQueryApi</span><span class="o">.</span><span class="n">_instance_ref</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">OSQueryApi</span><span class="o">.</span><span class="n">_instance_ref</span>
+
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">SpawnInstance</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to connect to osquery&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Failed to connect to osquery&#39;</span><span class="p">)</span>
+
+        <span class="n">OSQueryApi</span><span class="o">.</span><span class="n">_instance_ref</span> <span class="o">=</span> <span class="n">instance</span>
+
+        <span class="k">return</span> <span class="n">OSQueryApi</span><span class="o">.</span><span class="n">_instance_ref</span>
+
+<div class="viewcode-block" id="OSQueryApi.client"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.osqueryd.OSQueryApi.client">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Client</span><span class="p">:</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">OSQueryApi</span><span class="o">.</span><span class="n">_instance</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;osquery not available&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;OSQuery is not supported&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">client</span></div>
+
+<div class="viewcode-block" id="OSQueryApi.query"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.osqueryd.OSQueryApi.query">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]:</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">OSQueryApi</span><span class="o">.</span><span class="n">_instance</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;osquery not available - </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;OSQuery is not supported&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;osquery query failed - </span><span class="si">%d</span><span class="s1"> </span><span class="si">%s</span><span class="s1">, for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">response</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../">moonspec</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart/">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../apidoc/moonspec.api/">moonspec.api package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../">Documentation overview</a><ul>
+  <li><a href="../../../../">Module code</a><ul>
+  <li><a href="../../">moonspec.api</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Matīss Treinis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

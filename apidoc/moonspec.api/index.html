@@ -1,0 +1,678 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>moonspec.api package &#8212; moonspec 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="moonspec.api.interface package" href="../moonspec.api.interface/" />
+    <link rel="prev" title="Quickstart" href="../../quickstart/" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-moonspec.api">
+<span id="moonspec-api-package"></span><h1>moonspec.api package<a class="headerlink" href="#module-moonspec.api" title="Permalink to this headline">¶</a></h1>
+<p>The <cite>moonspec.api</cite> package contains all public APIs useful for writing specifications.</p>
+<p>This package also exports global instance of <cite>moonspec.api.Api</cite> as var <cite>api</cite> for you to use in your spec files to
+access APIs various APIs useful for host testing using fluent interfaces, for example,
+<cite>api.fs.hash_file(‘/example.txt’)</cite>.</p>
+<p><strong>Basic import</strong></p>
+<p>This import contains all the basic members you might need to write your specifications.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">moonspec.api</span> <span class="kn">import</span> <span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">any_of</span><span class="p">,</span> <span class="n">capture</span><span class="p">,</span>
+                          <span class="n">spec</span><span class="p">,</span> <span class="n">describe</span><span class="p">,</span> <span class="n">expect</span><span class="p">,</span>
+                          <span class="n">fact</span><span class="p">,</span> <span class="n">historic_fact</span><span class="p">,</span> <span class="n">maybe</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="moonspec.api.Api">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">Api</span></code><a class="reference internal" href="../../_modules/moonspec/api/#Api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.Api" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt id="moonspec.api.Api.host">
+<code class="sig-name descname"><span class="pre">host</span></code><em class="property"><span class="pre">:</span> <a class="reference internal" href="../moonspec.api.interface/#moonspec.api.interface.host.HostApi" title="moonspec.api.interface.host.HostApi"><span class="pre">moonspec.api.interface.host.HostApi</span></a></em><a class="headerlink" href="#moonspec.api.Api.host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access information related to local host</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.Api.fs">
+<code class="sig-name descname"><span class="pre">fs</span></code><em class="property"><span class="pre">:</span> <a class="reference internal" href="../moonspec.api.interface/#moonspec.api.interface.fs.FileSystemApi" title="moonspec.api.interface.fs.FileSystemApi"><span class="pre">moonspec.api.interface.fs.FileSystemApi</span></a></em><a class="headerlink" href="#moonspec.api.Api.fs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access information related to local file systems</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.Api.net">
+<code class="sig-name descname"><span class="pre">net</span></code><em class="property"><span class="pre">:</span> <a class="reference internal" href="../moonspec.api.interface/#moonspec.api.interface.inet.InetApi" title="moonspec.api.interface.inet.InetApi"><span class="pre">moonspec.api.interface.inet.InetApi</span></a></em><a class="headerlink" href="#moonspec.api.Api.net" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access network resources</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.Api.ssl">
+<code class="sig-name descname"><span class="pre">ssl</span></code><em class="property"><span class="pre">:</span> <a class="reference internal" href="../moonspec.api.interface/#moonspec.api.interface.ssl.SSLApi" title="moonspec.api.interface.ssl.SSLApi"><span class="pre">moonspec.api.interface.ssl.SSLApi</span></a></em><a class="headerlink" href="#moonspec.api.Api.ssl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query various SSL related items</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.capture">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">capture</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roles</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/#capture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.capture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Capture a fact to be used in tests or to be checked for state changes when executing
+specifications with state persistence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – globally unique identifier of a fact.</p></li>
+<li><p><strong>roles</strong> – list of zero or more roles this fact should be captured for.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.spec">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">spec</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roles</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/#spec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.spec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.describe">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">describe</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/#describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.describe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.fact">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">fact</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#moonspec.api.fact.Fact" title="moonspec.api.fact.Fact"><span class="pre">moonspec.api.fact.Fact</span></a><a class="reference internal" href="../../_modules/moonspec/api/#fact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.fact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.historic_fact">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">historic_fact</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#moonspec.api.fact.HistoricFact" title="moonspec.api.fact.HistoricFact"><span class="pre">moonspec.api.fact.HistoricFact</span></a><a class="reference internal" href="../../_modules/moonspec/api/#historic_fact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.historic_fact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.expect">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">expect</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identity</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#moonspec.api.subject.Subject" title="moonspec.api.subject.Subject"><span class="pre">moonspec.api.subject.Subject</span></a><a class="reference internal" href="../../_modules/moonspec/api/#expect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.expect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.maybe">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">maybe</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assertion</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">assertion_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/#maybe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.maybe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.any_of">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">any_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">assertions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/#any_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.any_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../moonspec.api.interface/">moonspec.api.interface package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#module-moonspec.api.interface.facter">moonspec.api.interface.facter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#module-moonspec.api.interface.fs">moonspec.api.interface.fs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#module-moonspec.api.interface.host">moonspec.api.interface.host module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#module-moonspec.api.interface.inet">moonspec.api.interface.inet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#module-moonspec.api.interface.libvirtd">moonspec.api.interface.libvirtd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#module-moonspec.api.interface.osqueryd">moonspec.api.interface.osqueryd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#module-moonspec.api.interface.ssl">moonspec.api.interface.ssl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../moonspec.api.interface/#module-moonspec.api.interface.systemd">moonspec.api.interface.systemd module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-moonspec.api.fact">
+<span id="moonspec-api-fact-module"></span><h2>moonspec.api.fact module<a class="headerlink" href="#module-moonspec.api.fact" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.fact.HistoricFact">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.fact.</span></code><code class="sig-name descname"><span class="pre">HistoricFact</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/moonspec/api/fact/#HistoricFact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.fact.HistoricFact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#moonspec.api.subject.Subject" title="moonspec.api.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">moonspec.api.subject.Subject</span></code></a></p>
+<p>A subject used to hold value of a fact from previous runs</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="moonspec.api.fact.Fact">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.fact.</span></code><code class="sig-name descname"><span class="pre">Fact</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/moonspec/api/fact/#Fact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.fact.Fact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#moonspec.api.subject.Subject" title="moonspec.api.subject.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">moonspec.api.subject.Subject</span></code></a></p>
+<p>A subject used to hold state indicator of a system - a fact</p>
+<dl class="py method">
+<dt id="moonspec.api.fact.Fact.should_not_have_changed">
+<code class="sig-name descname"><span class="pre">should_not_have_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">missing_ok</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/fact/#Fact.should_not_have_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.fact.Fact.should_not_have_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify if value of this fact has not changed over time
+:param missing_ok: True if absent historic values should be ignored, False otherwise. By default, True.
+:return: True if fact value has not changed when compared to current value (self vs historic)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-moonspec.api.subject">
+<span id="moonspec-api-subject-module"></span><h2>moonspec.api.subject module<a class="headerlink" href="#module-moonspec.api.subject" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.subject.ComparatorExpectations">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.subject.</span></code><code class="sig-name descname"><span class="pre">ComparatorExpectations</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#ComparatorExpectations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.ABSENT">
+<code class="sig-name descname"><span class="pre">ABSENT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.ABSENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.PRESENT">
+<code class="sig-name descname"><span class="pre">PRESENT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.PRESENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.EQUAL">
+<code class="sig-name descname"><span class="pre">EQUAL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.EQUAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.NOT_EQUAL">
+<code class="sig-name descname"><span class="pre">NOT_EQUAL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.NOT_EQUAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.NOT_CHANGED">
+<code class="sig-name descname"><span class="pre">NOT_CHANGED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.NOT_CHANGED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.SELF_IS_NUMBER">
+<code class="sig-name descname"><span class="pre">SELF_IS_NUMBER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.SELF_IS_NUMBER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.OTHER_IS_NUMBER">
+<code class="sig-name descname"><span class="pre">OTHER_IS_NUMBER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.OTHER_IS_NUMBER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.LT">
+<code class="sig-name descname"><span class="pre">LT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.LT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.GT">
+<code class="sig-name descname"><span class="pre">GT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.GT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.LTE">
+<code class="sig-name descname"><span class="pre">LTE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">9</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.LTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.GTE">
+<code class="sig-name descname"><span class="pre">GTE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">10</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.GTE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.EMPTY">
+<code class="sig-name descname"><span class="pre">EMPTY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">11</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.EMPTY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.NOT_EMPTY">
+<code class="sig-name descname"><span class="pre">NOT_EMPTY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">12</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.NOT_EMPTY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.CB">
+<code class="sig-name descname"><span class="pre">CB</span></code><em class="property"> <span class="pre">=</span> <span class="pre">13</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.CB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.TYPE">
+<code class="sig-name descname"><span class="pre">TYPE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">14</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.ANY_OF">
+<code class="sig-name descname"><span class="pre">ANY_OF</span></code><em class="property"> <span class="pre">=</span> <span class="pre">15</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.ANY_OF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.NONE_OF">
+<code class="sig-name descname"><span class="pre">NONE_OF</span></code><em class="property"> <span class="pre">=</span> <span class="pre">16</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.NONE_OF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.CONTAIN_ANY_OF">
+<code class="sig-name descname"><span class="pre">CONTAIN_ANY_OF</span></code><em class="property"> <span class="pre">=</span> <span class="pre">17</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.CONTAIN_ANY_OF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.CONTAIN_NONE_OF">
+<code class="sig-name descname"><span class="pre">CONTAIN_NONE_OF</span></code><em class="property"> <span class="pre">=</span> <span class="pre">18</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.CONTAIN_NONE_OF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.CONTAIN_ALL_OF">
+<code class="sig-name descname"><span class="pre">CONTAIN_ALL_OF</span></code><em class="property"> <span class="pre">=</span> <span class="pre">19</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.CONTAIN_ALL_OF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.HAVE_KEYS">
+<code class="sig-name descname"><span class="pre">HAVE_KEYS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">20</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.HAVE_KEYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.NOT_HAVE_KEYS">
+<code class="sig-name descname"><span class="pre">NOT_HAVE_KEYS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">21</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.NOT_HAVE_KEYS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.MATCH">
+<code class="sig-name descname"><span class="pre">MATCH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">22</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.MATCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.NOT_MATCH">
+<code class="sig-name descname"><span class="pre">NOT_MATCH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">23</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.NOT_MATCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.CONTAIN_MATCH">
+<code class="sig-name descname"><span class="pre">CONTAIN_MATCH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">24</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.CONTAIN_MATCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.NOT_CONTAIN_MATCH">
+<code class="sig-name descname"><span class="pre">NOT_CONTAIN_MATCH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">25</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.NOT_CONTAIN_MATCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.LENGTH">
+<code class="sig-name descname"><span class="pre">LENGTH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">26</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.LENGTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="moonspec.api.subject.ComparatorExpectations.NOT_LENGTH">
+<code class="sig-name descname"><span class="pre">NOT_LENGTH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">27</span></em><a class="headerlink" href="#moonspec.api.subject.ComparatorExpectations.NOT_LENGTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="moonspec.api.subject.SubjectExpectationException">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.subject.</span></code><code class="sig-name descname"><span class="pre">SubjectExpectationException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identity</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expectation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#moonspec.api.subject.ComparatorExpectations" title="moonspec.api.subject.ComparatorExpectations"><span class="pre">moonspec.api.subject.ComparatorExpectations</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#SubjectExpectationException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.SubjectExpectationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="moonspec.api.subject.Subject">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.subject.</span></code><code class="sig-name descname"><span class="pre">Subject</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identity</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_present">
+<code class="sig-name descname"><span class="pre">should_be_present</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_present"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_present" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_absent">
+<code class="sig-name descname"><span class="pre">should_be_absent</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_absent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_absent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_equal">
+<code class="sig-name descname"><span class="pre">should_equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_equal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_not_equal">
+<code class="sig-name descname"><span class="pre">should_not_equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_not_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_not_equal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_empty">
+<code class="sig-name descname"><span class="pre">should_be_empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_not_be_empty">
+<code class="sig-name descname"><span class="pre">should_not_be_empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_not_be_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_not_be_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_lt">
+<code class="sig-name descname"><span class="pre">should_be_lt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_lt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_lt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_gt">
+<code class="sig-name descname"><span class="pre">should_be_gt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_gt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_gt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_lte">
+<code class="sig-name descname"><span class="pre">should_be_lte</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_lte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_lte" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_gte">
+<code class="sig-name descname"><span class="pre">should_be_gte</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_gte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_gte" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_true">
+<code class="sig-name descname"><span class="pre">should_be_true</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_true"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_true" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_false">
+<code class="sig-name descname"><span class="pre">should_be_false</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_false"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_false" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_any_of">
+<code class="sig-name descname"><span class="pre">should_be_any_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_any_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_any_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_be_none_of">
+<code class="sig-name descname"><span class="pre">should_be_none_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_be_none_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_be_none_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_contain_any_of">
+<code class="sig-name descname"><span class="pre">should_contain_any_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_contain_any_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_contain_any_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_contain_none_of">
+<code class="sig-name descname"><span class="pre">should_contain_none_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_contain_none_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_contain_none_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_contain_all_of">
+<code class="sig-name descname"><span class="pre">should_contain_all_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_contain_all_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_contain_all_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_have_keys">
+<code class="sig-name descname"><span class="pre">should_have_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_have_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_have_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_not_have_keys">
+<code class="sig-name descname"><span class="pre">should_not_have_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_not_have_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_not_have_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_match">
+<code class="sig-name descname"><span class="pre">should_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_not_match">
+<code class="sig-name descname"><span class="pre">should_not_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_not_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_not_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_contain_match">
+<code class="sig-name descname"><span class="pre">should_contain_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_contain_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_contain_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_not_contain_match">
+<code class="sig-name descname"><span class="pre">should_not_contain_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_not_contain_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_not_contain_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_have_length">
+<code class="sig-name descname"><span class="pre">should_have_length</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_have_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_have_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should_not_have_length">
+<code class="sig-name descname"><span class="pre">should_not_have_length</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should_not_have_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should_not_have_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.should">
+<code class="sig-name descname"><span class="pre">should</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matcher</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.should"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.should" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_present">
+<code class="sig-name descname"><span class="pre">to_be_present</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_present"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_present" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_absent">
+<code class="sig-name descname"><span class="pre">to_be_absent</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_absent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_absent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_equal">
+<code class="sig-name descname"><span class="pre">to_equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_equal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_not_equal">
+<code class="sig-name descname"><span class="pre">to_not_equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_not_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_not_equal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_empty">
+<code class="sig-name descname"><span class="pre">to_be_empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_not_be_empty">
+<code class="sig-name descname"><span class="pre">to_not_be_empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_not_be_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_not_be_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_lt">
+<code class="sig-name descname"><span class="pre">to_be_lt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_lt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_lt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_gt">
+<code class="sig-name descname"><span class="pre">to_be_gt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_gt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_gt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_lte">
+<code class="sig-name descname"><span class="pre">to_be_lte</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_lte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_lte" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_gte">
+<code class="sig-name descname"><span class="pre">to_be_gte</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_gte"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_gte" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to">
+<code class="sig-name descname"><span class="pre">to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matcher</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_true">
+<code class="sig-name descname"><span class="pre">to_be_true</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_true"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_true" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_false">
+<code class="sig-name descname"><span class="pre">to_be_false</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_false"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_false" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_any_of">
+<code class="sig-name descname"><span class="pre">to_be_any_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_any_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_any_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_be_none_of">
+<code class="sig-name descname"><span class="pre">to_be_none_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_be_none_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_be_none_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_contain_any_of">
+<code class="sig-name descname"><span class="pre">to_contain_any_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_contain_any_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_contain_any_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_contain_none_of">
+<code class="sig-name descname"><span class="pre">to_contain_none_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_contain_none_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_contain_none_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_contain_all_of">
+<code class="sig-name descname"><span class="pre">to_contain_all_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_contain_all_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_contain_all_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_have_keys">
+<code class="sig-name descname"><span class="pre">to_have_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_have_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_have_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_not_have_keys">
+<code class="sig-name descname"><span class="pre">to_not_have_keys</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_not_have_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_not_have_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_match">
+<code class="sig-name descname"><span class="pre">to_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_not_match">
+<code class="sig-name descname"><span class="pre">to_not_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_not_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_not_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_contain_match">
+<code class="sig-name descname"><span class="pre">to_contain_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_contain_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_contain_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_not_contain_match">
+<code class="sig-name descname"><span class="pre">to_not_contain_match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_not_contain_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_not_contain_match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_have_length">
+<code class="sig-name descname"><span class="pre">to_have_length</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_have_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_have_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.to_not_have_length">
+<code class="sig-name descname"><span class="pre">to_not_have_length</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.to_not_have_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.to_not_have_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.lookup">
+<code class="sig-name descname"><span class="pre">lookup</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#moonspec.api.subject.Subject" title="moonspec.api.subject.Subject"><span class="pre">moonspec.api.subject.Subject</span></a><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.subject.Subject.at">
+<code class="sig-name descname"><span class="pre">at</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#moonspec.api.subject.Subject" title="moonspec.api.subject.Subject"><span class="pre">moonspec.api.subject.Subject</span></a><a class="reference internal" href="../../_modules/moonspec/api/subject/#Subject.at"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.subject.Subject.at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../">moonspec</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">moonspec.api package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../">Documentation overview</a><ul>
+      <li>Previous: <a href="../../quickstart/" title="previous chapter">Quickstart</a></li>
+      <li>Next: <a href="../moonspec.api.interface/" title="next chapter">moonspec.api.interface package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Matīss Treinis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/apidoc/moonspec.api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

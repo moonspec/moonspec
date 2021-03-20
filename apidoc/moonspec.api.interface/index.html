@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>moonspec.api.interface package &#8212; moonspec 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="prev" title="moonspec.api package" href="../moonspec.api/" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-moonspec.api.interface">
+<span id="moonspec-api-interface-package"></span><h1>moonspec.api.interface package<a class="headerlink" href="#module-moonspec.api.interface" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-moonspec.api.interface.facter">
+<span id="moonspec-api-interface-facter-module"></span><h2>moonspec.api.interface.facter module<a class="headerlink" href="#module-moonspec.api.interface.facter" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.interface.facter.FacterApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.facter.</span></code><code class="sig-name descname"><span class="pre">FacterApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/facter/#FacterApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.facter.FacterApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Interface to <cite>facter</cite> utility.</p>
+<dl class="py method">
+<dt id="moonspec.api.interface.facter.FacterApi.is_supported">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_supported</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/facter/#FacterApi.is_supported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.facter.FacterApi.is_supported" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <cite>facter</cite> utility is found on current host.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if facter is found on current host, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.facter.FacterApi.get_facts">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_facts</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="../../_modules/moonspec/api/interface/facter/#FacterApi.get_facts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.facter.FacterApi.get_facts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve facts about host operating system using <cite>facter</cite> utility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>facter command output as dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-moonspec.api.interface.fs">
+<span id="moonspec-api-interface-fs-module"></span><h2>moonspec.api.interface.fs module<a class="headerlink" href="#module-moonspec.api.interface.fs" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.interface.fs.Mount">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.fs.</span></code><code class="sig-name descname"><span class="pre">Mount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dev</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mount</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fstype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#Mount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.Mount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds information about a file system mount</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="moonspec.api.interface.fs.MountCollection">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.fs.</span></code><code class="sig-name descname"><span class="pre">MountCollection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mounts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#moonspec.api.interface.fs.Mount" title="moonspec.api.interface.fs.Mount"><span class="pre">moonspec.api.interface.fs.Mount</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#MountCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.MountCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.MountCollection.has_mount">
+<code class="sig-name descname"><span class="pre">has_mount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mount_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#MountCollection.has_mount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.MountCollection.has_mount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.MountCollection.has_dev">
+<code class="sig-name descname"><span class="pre">has_dev</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dev</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#MountCollection.has_dev"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.MountCollection.has_dev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="moonspec.api.interface.fs.PathApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.fs.</span></code><code class="sig-name descname"><span class="pre">PathApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_owned_by_uid">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_owned_by_uid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_owned_by_uid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_owned_by_uid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_owned_by_user">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_owned_by_user</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_owned_by_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_owned_by_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_owned_by_gid">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_owned_by_gid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_owned_by_gid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_owned_by_gid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_owned_by_group">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_owned_by_group</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_owned_by_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_owned_by_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.exists_owned_by_u">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">exists_owned_by_u</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.exists_owned_by_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.exists_owned_by_u" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.exists_owned_by_g">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">exists_owned_by_g</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.exists_owned_by_g"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.exists_owned_by_g" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.exists_owned_by_ug">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">exists_owned_by_ug</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.exists_owned_by_ug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.exists_owned_by_ug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.can_read">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">can_read</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.can_read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.can_read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.can_write">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">can_write</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.can_write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.can_write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.can_exec">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">can_exec</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.can_exec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.can_exec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.exists">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">exists</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_file">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_link">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_link</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_link" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_mount">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_mount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_mount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_mount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_dir">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_dir</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_empty">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_empty</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.get_size_b">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_size_b</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.get_size_b"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.get_size_b" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.has_extension">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">has_extension</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.has_extension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.has_extension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_smaller_than">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_smaller_than</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_smaller_than"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_smaller_than" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_larger_than">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_larger_than</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_larger_than"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_larger_than" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.PathApi.is_of_size">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_of_size</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#PathApi.is_of_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.PathApi.is_of_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="moonspec.api.interface.fs.FileSystemApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.fs.</span></code><code class="sig-name descname"><span class="pre">FileSystemApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>path</strong> – PathApi: instance of PathApi</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.stat">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">stat</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">os.stat_result</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.stat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.stat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.hash_file">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">hash_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">hash_names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.hash_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.hash_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.all_files_in">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">all_files_in</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matcher</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">re.Pattern</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.all_files_in"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.all_files_in" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.line_in_file">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">line_in_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matcher</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">re.Pattern</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.line_in_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.line_in_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.lines_in_file">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">lines_in_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matcher</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">re.Pattern</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.lines_in_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.lines_in_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.space_free">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">space_free</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.space_free"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.space_free" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.space_used">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">space_used</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.space_used"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.space_used" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.space_total">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">space_total</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.space_total"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.space_total" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.space_gt_threshold">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">space_gt_threshold</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percent</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.space_gt_threshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.space_gt_threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.fs.FileSystemApi.mounts">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">mounts</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#moonspec.api.interface.fs.MountCollection" title="moonspec.api.interface.fs.MountCollection"><span class="pre">moonspec.api.interface.fs.MountCollection</span></a><a class="reference internal" href="../../_modules/moonspec/api/interface/fs/#FileSystemApi.mounts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.fs.FileSystemApi.mounts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-moonspec.api.interface.host">
+<span id="moonspec-api-interface-host-module"></span><h2>moonspec.api.interface.host module<a class="headerlink" href="#module-moonspec.api.interface.host" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.interface.host.HostUser">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.host.</span></code><code class="sig-name descname"><span class="pre">HostUser</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostUser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="moonspec.api.interface.host.HostGroup">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.host.</span></code><code class="sig-name descname"><span class="pre">HostGroup</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="moonspec.api.interface.host.HostApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.host.</span></code><code class="sig-name descname"><span class="pre">HostApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="moonspec.api.interface.host.HostApi.username">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">username</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi.username"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.host.HostApi.fqdn">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">fqdn</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi.fqdn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi.fqdn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.host.HostApi.name">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.host.HostApi.user_exists">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">user_exists</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi.user_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi.user_exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.host.HostApi.group_exists">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">group_exists</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi.group_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi.group_exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.host.HostApi.users">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">users</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#moonspec.api.interface.host.HostUser" title="moonspec.api.interface.host.HostUser"><span class="pre">moonspec.api.interface.host.HostUser</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi.users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi.users" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.host.HostApi.groups">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">groups</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#moonspec.api.interface.host.HostGroup" title="moonspec.api.interface.host.HostGroup"><span class="pre">moonspec.api.interface.host.HostGroup</span></a><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi.groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi.groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.host.HostApi.cpu_count">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">cpu_count</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="../../_modules/moonspec/api/interface/host/#HostApi.cpu_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.host.HostApi.cpu_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-moonspec.api.interface.inet">
+<span id="moonspec-api-interface-inet-module"></span><h2>moonspec.api.interface.inet module<a class="headerlink" href="#module-moonspec.api.interface.inet" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.interface.inet.InetApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.inet.</span></code><code class="sig-name descname"><span class="pre">InetApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/inet/#InetApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.inet.InetApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="moonspec.api.interface.inet.InetApi.tcp_check_open">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">tcp_check_open</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/inet/#InetApi.tcp_check_open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.inet.InetApi.tcp_check_open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.inet.InetApi.tcp_latency">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">tcp_latency</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="../../_modules/moonspec/api/interface/inet/#InetApi.tcp_latency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.inet.InetApi.tcp_latency" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.inet.InetApi.tcp_latency_avg">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">tcp_latency_avg</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_ms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="../../_modules/moonspec/api/interface/inet/#InetApi.tcp_latency_avg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.inet.InetApi.tcp_latency_avg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-moonspec.api.interface.libvirtd">
+<span id="moonspec-api-interface-libvirtd-module"></span><h2>moonspec.api.interface.libvirtd module<a class="headerlink" href="#module-moonspec.api.interface.libvirtd" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.interface.libvirtd.LibvirtApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.libvirtd.</span></code><code class="sig-name descname"><span class="pre">LibvirtApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/libvirtd/#LibvirtApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.libvirtd.LibvirtApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="moonspec.api.interface.libvirtd.LibvirtApi.ro">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">ro</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">libvirt.virConnect</span><a class="reference internal" href="../../_modules/moonspec/api/interface/libvirtd/#LibvirtApi.ro"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.libvirtd.LibvirtApi.ro" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.libvirtd.LibvirtApi.admin">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">admin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">libvirt.virConnect</span><a class="reference internal" href="../../_modules/moonspec/api/interface/libvirtd/#LibvirtApi.admin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.libvirtd.LibvirtApi.admin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-moonspec.api.interface.osqueryd">
+<span id="moonspec-api-interface-osqueryd-module"></span><h2>moonspec.api.interface.osqueryd module<a class="headerlink" href="#module-moonspec.api.interface.osqueryd" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.interface.osqueryd.OSQueryApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.osqueryd.</span></code><code class="sig-name descname"><span class="pre">OSQueryApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/osqueryd/#OSQueryApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.osqueryd.OSQueryApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="moonspec.api.interface.osqueryd.OSQueryApi.supports">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">supports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/osqueryd/#OSQueryApi.supports"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.osqueryd.OSQueryApi.supports" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.osqueryd.OSQueryApi.client">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">client</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">osquery.extensions.ExtensionManager.Client</span><a class="reference internal" href="../../_modules/moonspec/api/interface/osqueryd/#OSQueryApi.client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.osqueryd.OSQueryApi.client" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.osqueryd.OSQueryApi.query">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">query</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/osqueryd/#OSQueryApi.query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.osqueryd.OSQueryApi.query" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-moonspec.api.interface.ssl">
+<span id="moonspec-api-interface-ssl-module"></span><h2>moonspec.api.interface.ssl module<a class="headerlink" href="#module-moonspec.api.interface.ssl" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.interface.ssl.SSLApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.ssl.</span></code><code class="sig-name descname"><span class="pre">SSLApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/ssl/#SSLApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.ssl.SSLApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="moonspec.api.interface.ssl.SSLApi.get_remote_x509">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_remote_x509</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">cryptography.x509.base.Certificate</span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/ssl/#SSLApi.get_remote_x509"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.ssl.SSLApi.get_remote_x509" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> – </p></li>
+<li><p><strong>port</strong> – </p></li>
+<li><p><strong>verify</strong> – </p></li>
+<li><p><strong>timeout_ms</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of Certificate, None if certificate can’t be retrieved, or False if verify=True, and
+certificate is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-moonspec.api.interface.systemd">
+<span id="moonspec-api-interface-systemd-module"></span><h2>moonspec.api.interface.systemd module<a class="headerlink" href="#module-moonspec.api.interface.systemd" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="moonspec.api.interface.systemd.SystemdApi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moonspec.api.interface.systemd.</span></code><code class="sig-name descname"><span class="pre">SystemdApi</span></code><a class="reference internal" href="../../_modules/moonspec/api/interface/systemd/#SystemdApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.systemd.SystemdApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Interface to SystemD</p>
+<dl class="py method">
+<dt id="moonspec.api.interface.systemd.SystemdApi.is_supported">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_supported</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/systemd/#SystemdApi.is_supported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.systemd.SystemdApi.is_supported" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if SystemD is supported on this host</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if supported, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.systemd.SystemdApi.show">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">show</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/systemd/#SystemdApi.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.systemd.SystemdApi.show" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.systemd.SystemdApi.is_active">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_active</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/systemd/#SystemdApi.is_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.systemd.SystemdApi.is_active" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.systemd.SystemdApi.is_enabled">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_enabled</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="../../_modules/moonspec/api/interface/systemd/#SystemdApi.is_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.systemd.SystemdApi.is_enabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="moonspec.api.interface.systemd.SystemdApi.get_service_state">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_service_state</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="../../_modules/moonspec/api/interface/systemd/#SystemdApi.get_service_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.interface.systemd.SystemdApi.get_service_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../">moonspec</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart/">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../moonspec.api/">moonspec.api package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../">Documentation overview</a><ul>
+  <li><a href="../moonspec.api/">moonspec.api package</a><ul>
+      <li>Previous: <a href="../moonspec.api/" title="previous chapter">moonspec.api package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Matīss Treinis.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/apidoc/moonspec.api.interface.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
