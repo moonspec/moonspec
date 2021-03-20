@@ -35,6 +35,8 @@ documentation:
 	rm -rf "${PUBDIR}"
 	mkdir -p "${PUBDIR}"
 	cp -r "${HTMLDIR}"/* "${PUBDIR}"
+	echo 'moonspec.hub256.com' > "${PUBDIR}/CNAME"
+	touch "${PUBDIR}/.nojekyll"
 
 
 .PHONY: help Makefile
