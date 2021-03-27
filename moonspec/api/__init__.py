@@ -13,7 +13,8 @@ This import contains all the basic members you might need to write your specific
 
     from moonspec.api import (api, any_of, capture,
                               spec, describe, expect,
-                              fact, historic_fact, maybe)
+                              fact, historic_fact, maybe,
+                              apply_to_roles)
 
 """
 from typing import List, Any, Callable, Optional
@@ -52,14 +53,21 @@ def capture(key: str = None, roles: List[str] = None) -> Callable[[Callable[[], 
             else:
                 raise RuntimeError('Capture: decorator key must be set or function name must start with capture_')
 
-        _MOONSPEC_RUNTIME_STATE.register_capture(capture_key, function_ref, set(roles or []))
+        _MOONSPEC_RUNTIME_STATE.register_capture(
+            capture_key,
+            function_ref,
+            set(roles or []).union(_MOONSPEC_RUNTIME_STATE.scope.scope_roles)
+        )
 
     return __capture_imp
 
 
 def spec(roles: List[str] = None) -> Callable[[Callable[[], None]], None]:
     def __spec_imp(function_ref: Callable) -> None:
-        _MOONSPEC_RUNTIME_STATE.register_spec(set(roles or []), function_ref)
+        _MOONSPEC_RUNTIME_STATE.register_spec(
+            set(roles or []).union(_MOONSPEC_RUNTIME_STATE.scope.scope_roles),
+            function_ref
+        )
 
     return __spec_imp
 
@@ -113,6 +121,16 @@ def any_of(*assertions: Callable, description: str = None) -> None:
         raise RuntimeError(scope_desc)
 
     raise RuntimeError('All expectations for any_of failed')
+
+
+def apply_to_roles(*roles: str) -> None:
+    """
+    Add given roles to all subsequent facts and specifications, in addition to roles defined per-specification
+    or per capture, within the current file (module).
+
+    :param roles: one or more roles
+    """
+    _MOONSPEC_RUNTIME_STATE.scope.apply_to_roles(set(roles))
 
 
 api: Api = Api()

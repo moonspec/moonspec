@@ -116,7 +116,7 @@ class App:
 
         suite_config = test_config['suites'][test_suite]
 
-        if suite_config['data_dir'] is not None:
+        if 'data_dir' in suite_config and suite_config['data_dir'] is not None:
             data_dir = os.path.realpath(suite_config['data_dir'])
 
             if not PathApi.is_dir(data_dir):

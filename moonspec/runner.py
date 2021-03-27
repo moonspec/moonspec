@@ -61,6 +61,8 @@ class SpecLog:
 
 
 def discover_spec_files_in_path(path: str) -> Generator:
+    root_module = os.path.basename(path)
+
     for root, dirs, files in os.walk(path):
         for name in files:
             full_path = os.path.join(root, name)
@@ -74,7 +76,7 @@ def discover_spec_files_in_path(path: str) -> Generator:
             yield {
                 'file': os.path.relpath(full_path, path),
                 'root': path,
-                'module': os.path.relpath(full_path, path)[:-3].replace('/', '.')
+                'module': '%s.%s' % (root_module, os.path.relpath(full_path, path)[:-3].replace('/', '.'))
             }
 
 
@@ -88,8 +90,10 @@ def spec_has_role(limit_roles: Set[str], spec: SpecCaseDefinition) -> bool:
 
 
 def execute_specs_from_path(path: str, limit_roles: Set[str], log: SpecLog, fail_fast: bool) -> bool:
-    if sys.path[0] != path:
-        sys.path.insert(0, path)
+    parent_path = os.path.dirname(path)
+
+    if sys.path[0] != parent_path:
+        sys.path.insert(0, parent_path)
 
     for spec_file in discover_spec_files_in_path(path):
         LOGGER.debug(
@@ -103,6 +107,8 @@ def execute_specs_from_path(path: str, limit_roles: Set[str], log: SpecLog, fail
         except Exception as e:
             LOGGER.error('Failed to import specification file', exc_info=e)
             return False
+        finally:
+            _MOONSPEC_RUNTIME_STATE.scope.clear_scope_roles()
 
     _MOONSPEC_RUNTIME_STATE.load_facts(limit_roles)
 
@@ -126,6 +132,7 @@ def execute_specs_from_path(path: str, limit_roles: Set[str], log: SpecLog, fail
         LOGGER.info('Queued %d %s', num_specs_to_run, 'specification' if num_specs_to_run == 1 else 'specification')
 
     for spec in specs_to_run:
+        _MOONSPEC_RUNTIME_STATE.scope.set_scope_description(None)
         log.register_starting(spec)
         LOGGER.debug('Starting specification <%s>', str(spec))
         try:

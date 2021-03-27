@@ -1,0 +1,2 @@
+- HostApi: verify host time zone 
+- DNSApi: DNS resolution related APIs 

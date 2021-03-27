@@ -39,6 +39,13 @@ class CurrentScope(threading.local):
     def __init__(self) -> None:
         self.soft_spec_failures: List[BaseException] = []
         self.scope_desc: Optional[str] = None
+        self.scope_roles: Set[str] = set()
+
+    def apply_to_roles(self, roles: Set) -> None:
+        self.scope_roles = roles
+
+    def clear_scope_roles(self) -> None:
+        self.scope_roles = set()
 
     def set_scope_description(self, description: Optional['str']) -> None:
         self.scope_desc = description
