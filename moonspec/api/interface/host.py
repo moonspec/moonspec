@@ -3,7 +3,7 @@ import os
 import socket
 from grp import struct_group
 from pwd import struct_passwd
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from moonspec.api._utils import _get_pwd_group_by_name, _get_pwd_user_by_name, _get_pwd_users, _get_pwd_groups
 from moonspec.api.interface.libvirtd import LibvirtApi
@@ -108,3 +108,28 @@ class HostApi:
     @staticmethod
     def cpu_count() -> int:
         return multiprocessing.cpu_count()
+
+    @staticmethod
+    def load_avg() -> Tuple[float, float, float]:
+        return os.getloadavg()
+
+    @staticmethod
+    def load_avg_percent() -> Tuple[float, float, float]:
+        cpu_count = HostApi.cpu_count()
+        l1, l5, l15 = HostApi.load_avg()
+        return (l1 / cpu_count) * 100, (l5 / cpu_count) * 100, (l15 / cpu_count) * 100
+
+    @staticmethod
+    def load_1_above(percent_threshold: float):
+        l1p, _, _ = HostApi.load_avg_percent()
+        return l1p > percent_threshold
+
+    @staticmethod
+    def load_5_above(percent_threshold: float):
+        _, l5p, _ = HostApi.load_avg_percent()
+        return l5p > percent_threshold
+
+    @staticmethod
+    def load_15_above(percent_threshold: float):
+        _, _, l15p = HostApi.load_avg_percent()
+        return l15p > percent_threshold
