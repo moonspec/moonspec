@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moonspec.api package &#8212; moonspec 0.1.3 documentation</title>
+    <title>moonspec.api package &#8212; moonspec 0.1.4 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -42,7 +42,8 @@ access APIs various APIs useful for host testing using fluent interfaces, for ex
 <p>This import contains all the basic members you might need to write your specifications.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">moonspec.api</span> <span class="kn">import</span> <span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">any_of</span><span class="p">,</span> <span class="n">capture</span><span class="p">,</span>
                           <span class="n">spec</span><span class="p">,</span> <span class="n">describe</span><span class="p">,</span> <span class="n">expect</span><span class="p">,</span>
-                          <span class="n">fact</span><span class="p">,</span> <span class="n">historic_fact</span><span class="p">,</span> <span class="n">maybe</span><span class="p">)</span>
+                          <span class="n">fact</span><span class="p">,</span> <span class="n">historic_fact</span><span class="p">,</span> <span class="n">maybe</span><span class="p">,</span>
+                          <span class="n">apply_to_roles</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py class">
@@ -124,6 +125,18 @@ specifications with state persistence.</p>
 <dt id="moonspec.api.any_of">
 <code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">any_of</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">assertions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/#any_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.any_of" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt id="moonspec.api.apply_to_roles">
+<code class="sig-prename descclassname"><span class="pre">moonspec.api.</span></code><code class="sig-name descname"><span class="pre">apply_to_roles</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">roles</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="../../_modules/moonspec/api/#apply_to_roles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moonspec.api.apply_to_roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add given roles to all subsequent facts and specifications, in addition to roles defined per-specification
+or per capture, within the current file (module).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>roles</strong> – one or more roles</p>
+</dd>
+</dl>
+</dd></dl>
 
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
