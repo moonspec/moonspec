@@ -2,6 +2,7 @@ import importlib
 import importlib.util
 import logging
 import os
+import sys
 from enum import Enum
 from typing import List, Set, Generator
 
@@ -60,8 +61,6 @@ class SpecLog:
 
 
 def discover_spec_files_in_path(path: str) -> Generator:
-    root_module = os.path.basename(path)
-
     for root, dirs, files in os.walk(path):
         for name in files:
             full_path = os.path.join(root, name)
@@ -75,7 +74,7 @@ def discover_spec_files_in_path(path: str) -> Generator:
             yield {
                 'file': os.path.relpath(full_path, path),
                 'root': path,
-                'module': '%s.%s' % (root_module, os.path.relpath(full_path, path)[:-3].replace('/', '.'))
+                'module': os.path.relpath(full_path, path)[:-3].replace('/', '.')
             }
 
 
@@ -89,7 +88,16 @@ def spec_has_role(limit_roles: Set[str], spec: SpecCaseDefinition) -> bool:
 
 
 def execute_specs_from_path(path: str, limit_roles: Set[str], log: SpecLog, fail_fast: bool) -> bool:
+    if sys.path[0] != path:
+        sys.path.insert(0, path)
+
     for spec_file in discover_spec_files_in_path(path):
+        LOGGER.debug(
+            'Discovered specification file %s/%s (as module %s)',
+            spec_file['root'],
+            spec_file['file'],
+            spec_file['module']
+        )
         try:
             importlib.import_module(spec_file['module'], spec_file['root'])
         except Exception as e:
@@ -100,6 +108,13 @@ def execute_specs_from_path(path: str, limit_roles: Set[str], log: SpecLog, fail
 
     # TODO multi-threaded?
     # TODO move all the logger stuff to SpecLog
+
+    num_specifications = len(_MOONSPEC_RUNTIME_STATE.specs)
+    LOGGER.debug(
+        'Discovered %d %s',
+        num_specifications,
+        'specification' if num_specifications == 1 else 'specifications'
+    )
 
     specs_to_run = [spec for spec in _MOONSPEC_RUNTIME_STATE.specs if spec_has_role(limit_roles, spec)]
     num_specs_to_run = len(specs_to_run)

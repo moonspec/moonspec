@@ -1,3 +1,6 @@
+* Sat Mar 27 2021 Matiss Treinis <matiss@hub256.com> - 0.1.3
+- Bugfixes
+
 * Sat Mar 27 2021 Matiss Treinis <matiss@hub256.com> - 0.1.2
 - Add host load average read API
 

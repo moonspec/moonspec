@@ -86,7 +86,7 @@ class App:
         LOGGER.debug('Requested test suite <%s>', test_suite)
         _MOONSPEC_RUNTIME_STATE.set_test_suite(args.suite)
 
-        config_file = args.config
+        config_file = os.path.abspath(args.config)
         LOGGER.debug('Loading config file from <%s>', config_file)
 
         if not PathApi.is_file(config_file):
