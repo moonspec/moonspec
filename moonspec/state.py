@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import pickle
@@ -112,7 +111,7 @@ class State:
         # TODO: print timing in debug?
         # Load current facts
         for key, definition in self.captures.items():
-            if limit_roles is not None and 0 != len(limit_roles):
+            if limit_roles is not None and 0 != len(definition.roles) and 0 != len(limit_roles):
                 if 0 == len(limit_roles.intersection(definition.roles)):
                     LOGGER.debug('Skipping capture of fact <%s>, role not needed', key)
                     continue

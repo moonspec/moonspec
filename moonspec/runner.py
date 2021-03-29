@@ -84,6 +84,10 @@ def spec_has_role(limit_roles: Set[str], spec: SpecCaseDefinition) -> bool:
     if limit_roles is None or 0 == len(limit_roles):
         return True
 
+    # If spec has no role, it applies to ALL roles
+    if 0 == len(spec.roles):
+        return True
+
     intersect = limit_roles.intersection(spec.roles)
 
     return 0 < len(intersect)

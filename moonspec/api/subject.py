@@ -1,8 +1,7 @@
 import math
 import re
 from enum import Enum
-from re import Pattern
-from typing import Callable, Any, Optional, Union, Tuple
+from typing import Callable, Any, Optional, Union, Tuple, Pattern
 
 from moonspec import _MOONSPEC_RUNTIME_STATE
 

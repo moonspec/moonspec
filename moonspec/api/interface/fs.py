@@ -1,8 +1,7 @@
 import hashlib
 import os
 import shutil
-from re import Pattern
-from typing import Dict, Callable, List, Union, Any
+from typing import Dict, Callable, List, Union, Any, Pattern
 
 from moonspec.api._utils import _get_pwd_user_by_name, _get_pwd_group_by_name
 
