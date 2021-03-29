@@ -94,6 +94,9 @@ def spec_has_role(limit_roles: Set[str], spec: SpecCaseDefinition) -> bool:
 
 
 def execute_specs_from_path(path: str, limit_roles: Set[str], log: SpecLog, fail_fast: bool) -> bool:
+    # Prevent __pycache__ from being created.
+    sys.dont_write_bytecode = True
+
     parent_path = os.path.dirname(path)
 
     if sys.path[0] != parent_path:

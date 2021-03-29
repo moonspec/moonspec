@@ -56,7 +56,7 @@ def _configure_default_logger() -> None:
     _bootstrap_default_logger(logger)
 
 
-MOONSPEC_VERSION: str = '0.1.5'
+MOONSPEC_VERSION: str = '0.1.6'
 
 _configure_default_logger()
 _MOONSPEC_RUNTIME_STATE: State = State()
