@@ -10,6 +10,14 @@ def date_now_format() -> str:
     return datetime.now().isoformat()
 
 
+def date_now_readable_format() -> str:
+    return datetime.now().strftime('%c')
+
+
+def time_now_readable_format() -> str:
+    return datetime.now().strftime('%X')
+
+
 def md5(value: str) -> str:
     return hashlib.md5(value.encode()).hexdigest()
 

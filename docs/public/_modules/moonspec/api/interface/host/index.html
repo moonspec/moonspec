@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moonspec.api.interface.host &#8212; moonspec 0.1.6 documentation</title>
+    <title>moonspec.api.interface.host &#8212; moonspec 0.1.7 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
@@ -153,17 +153,17 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">l1</span> <span class="o">/</span> <span class="n">cpu_count</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="p">(</span><span class="n">l5</span> <span class="o">/</span> <span class="n">cpu_count</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="p">(</span><span class="n">l15</span> <span class="o">/</span> <span class="n">cpu_count</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span></div>
 
 <div class="viewcode-block" id="HostApi.load_1_above"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.host.HostApi.load_1_above">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_1_above</span><span class="p">(</span><span class="n">percent_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_1_above</span><span class="p">(</span><span class="n">percent_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">l1p</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">HostApi</span><span class="o">.</span><span class="n">load_avg_percent</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">l1p</span> <span class="o">&gt;</span> <span class="n">percent_threshold</span></div>
 
 <div class="viewcode-block" id="HostApi.load_5_above"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.host.HostApi.load_5_above">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_5_above</span><span class="p">(</span><span class="n">percent_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_5_above</span><span class="p">(</span><span class="n">percent_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">l5p</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">HostApi</span><span class="o">.</span><span class="n">load_avg_percent</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">l5p</span> <span class="o">&gt;</span> <span class="n">percent_threshold</span></div>
 
 <div class="viewcode-block" id="HostApi.load_15_above"><a class="viewcode-back" href="../../../../../apidoc/moonspec.api.interface/#moonspec.api.interface.host.HostApi.load_15_above">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_15_above</span><span class="p">(</span><span class="n">percent_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_15_above</span><span class="p">(</span><span class="n">percent_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">l15p</span> <span class="o">=</span> <span class="n">HostApi</span><span class="o">.</span><span class="n">load_avg_percent</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">l15p</span> <span class="o">&gt;</span> <span class="n">percent_threshold</span></div></div>
 </pre></div>

@@ -15,7 +15,8 @@ from moonspec import _MOONSPEC_RUNTIME_STATE
 from moonspec.api import HostApi
 from moonspec.api.interface.fs import PathApi
 from moonspec.state import SpecCaseDefinition
-from moonspec.utils import ts_now_ms, date_now_format, md5, ObjectView
+from moonspec.utils import ts_now_ms, date_now_format, date_now_readable_format, md5, ObjectView, \
+    time_now_readable_format
 
 LOGGER = logging.getLogger('moonspec')
 
@@ -144,7 +145,7 @@ class HTMLOutput(Output):
         </tr>''' % (
             html.escape(spec.readable_module()),
             html.escape(spec.readable_name()),
-            html.escape(date_now_format())
+            html.escape(time_now_readable_format())
         )
 
     def on_spec_success(self, spec: SpecCaseDefinition) -> None:
@@ -157,7 +158,7 @@ class HTMLOutput(Output):
         </tr>''' % (
             html.escape(spec.readable_module()),
             html.escape(spec.readable_name()),
-            html.escape(date_now_format())
+            html.escape(time_now_readable_format())
         )
 
     def on_spec_failure(self, spec: SpecCaseDefinition, cause: BaseException,
@@ -171,7 +172,7 @@ class HTMLOutput(Output):
         </tr>''' % (
             html.escape(spec.readable_module()),
             html.escape(spec.readable_name()),
-            html.escape(date_now_format()),
+            html.escape(time_now_readable_format()),
             html.escape(str(cause))
         )
 
@@ -185,7 +186,7 @@ class HTMLOutput(Output):
             </tr>''' % (
                 html.escape(spec.readable_module()),
                 html.escape(spec.readable_name()),
-                html.escape(date_now_format()),
+                html.escape(time_now_readable_format()),
                 html.escape(str(soft))
             )
 
@@ -200,7 +201,7 @@ class HTMLOutput(Output):
             </tr>''' % (
                 html.escape(spec.readable_module()),
                 html.escape(spec.readable_name()),
-                html.escape(date_now_format()),
+                html.escape(time_now_readable_format()),
                 html.escape(str(soft))
             )
 
@@ -211,7 +212,7 @@ class HTMLOutput(Output):
         <td>&nbsp;</td>
         <td>%s</td>
         <td>&nbsp;</td>
-        </tr>''' % html.escape(date_now_format())
+        </tr>''' % html.escape(date_now_readable_format())
 
     def to_html(self) -> str:
         html_content = f'''<!doctype html>
@@ -220,7 +221,7 @@ class HTMLOutput(Output):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>moonspec - {html.escape(HostApi.name())} - {html.escape(date_now_format())}</title>
+    <title>moonspec - {html.escape(HostApi.name())} - {html.escape(date_now_readable_format())}</title>
     <style>
         * {{margin: 0; padding: 0; }}
         body, html {{
@@ -246,10 +247,137 @@ class HTMLOutput(Output):
 <body>
 <div id="wrapper">
     <div id="content">
-        <div id="title"><h1>moonspec result for test suite "{html.escape(_MOONSPEC_RUNTIME_STATE.suite_name)}" 
+        <div id="title"><h1>moonspec result for spec suite "{html.escape(_MOONSPEC_RUNTIME_STATE.suite_name)}" 
             on {html.escape(HostApi.name())}</h1></div>
-        <div id="date">{html.escape(date_now_format())}</div>
+        <div id="date">{html.escape(date_now_readable_format())}</div>
         <table id="log">{self.buffer}</table>
+    </div>
+</div>
+</body>
+</html>'''
+        return html_content
+
+
+# noinspection DuplicatedCode
+class MailHTMLOutput(Output):
+    """
+    Buffered HTML output slightly optimized for email alerting, renders on-demand, with no persistence
+    """
+
+    def __init__(self, when: str) -> None:
+        self.buffer_success: str = ''
+        self.buffer_failure: str = ''
+        self.buffer_unstable: str = ''
+        self.when = when
+
+    def on_spec_start(self, spec: SpecCaseDefinition) -> None:
+        pass
+
+    def on_spec_success(self, spec: SpecCaseDefinition) -> None:
+        self.buffer_success += '''<tr class="line successful">
+        <th>Successful</th>
+        <td>&nbsp;</td>
+        <td>%s</td>
+        <td>%s</td>
+        <td>%s</td>
+        </tr>''' % (
+            html.escape(spec.readable_name()),
+            html.escape(spec.readable_module()),
+            html.escape(time_now_readable_format())
+        )
+
+    def on_spec_failure(self, spec: SpecCaseDefinition, cause: BaseException,
+                        soft_failures: List[BaseException]) -> None:
+        self.buffer_failure += '''<tr class="line fail">
+        <th>Failed</th>
+        <td>%s</td>
+        <td>%s</td>
+        <td>%s</td>
+        <td>%s</td>
+        </tr>''' % (
+            html.escape(str(cause)),
+            html.escape(spec.readable_name()),
+            html.escape(spec.readable_module()),
+            html.escape(time_now_readable_format())
+        )
+
+        for soft in soft_failures:
+            self.buffer_failure += '''<tr class="line unstable">
+            <th>Unstable</th>
+            <td>%s</td>
+            <td>%s</td>
+            <td>%s</td>
+            <td>%s</td>
+            </tr>''' % (
+                html.escape(str(soft)),
+                html.escape(spec.readable_name()),
+                html.escape(spec.readable_module()),
+                html.escape(time_now_readable_format())
+            )
+
+    def on_spec_unstable(self, spec: SpecCaseDefinition, soft_failures: List[BaseException]) -> None:
+        for soft in soft_failures:
+            self.buffer_unstable += '''<tr class="line unstable">
+            <th>Unstable</th>
+            <td>%s</td>
+            <td>%s</td>
+            <td>%s</td>
+            <td>%s</td>
+            </tr>''' % (
+                html.escape(str(soft)),
+                html.escape(spec.readable_name()),
+                html.escape(spec.readable_module()),
+                html.escape(time_now_readable_format())
+            )
+
+    def on_complete(self, any_failed: bool) -> None:
+        return
+
+    def to_html(self) -> str:
+        html_content = f'''<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>moonspec - {html.escape(HostApi.name())} - {html.escape(date_now_readable_format())}</title>
+    <style>
+        * {{margin: 0; padding: 0; }}
+        body, html {{
+            background-color: #2e3440 !important;
+            background: #2e3440 !important; color: #e2e2e2 !important; margin: 0; padding: 0; font-size: 15px;
+            font-family: 'SF Pro Display', 'open sans', -apple-system, BlinkMacSystemFont, 
+                'segoe ui', roboto, oxygen-sans, ubuntu, cantarell, 'helvetica neue', 'arial', sans-serif,
+                'apple color emoji', 'segoe ui emoji', 'segoe ui symbol';            
+        }}
+        #wrapper {{ padding: 20px; display: flex; justify-content: center; }}
+        #content {{ flex: 0 1 auto; }}
+        #title, #subtitle, #date {{padding-bottom: 15px;}}
+        #title h1 {{font-size: 26px;font-weight: 300; margin: 0; padding: 0; }}
+        #subtitle h2 {{font-size: 20px;font-weight: 300; margin: 0; padding: 0; }}
+        #log {{margin-bottom: 15px;}}
+        #log, #log tr, #log tr td, #log tr th {{border-collapse: collapse; border: 1px solid #4c566a !important;}}
+        #log tr td {{ padding: 5px 10px; }}
+        #log tr th {{ padding: 5px 10px; text-align: left; font-weight: normal; }}
+        #log tr.started th {{ color: #b48ead !important; }}
+        #log tr.successful th {{ color: #a3be8c !important; }}
+        #log tr.fail th {{ color: #bf616a !important; }}
+        #log tr.unstable th {{ color: #ebcb8b !important; }}
+        #log tr.complete th {{ color: #81a1c1 !important; }}
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <div id="content">
+        <div id="title"><h1>moonspec result for spec suite "{html.escape(_MOONSPEC_RUNTIME_STATE.suite_name)}" 
+            on {html.escape(HostApi.name())}</h1></div>
+        <div id="date">{html.escape(date_now_readable_format())}</div>
+        <div id="subtitle"><h2>Failed</h2></div>
+        <table id="log">{self.buffer_failure or '<tr><td>None</td></tr>'}</table>
+        <div id="subtitle"><h2>Unstable</h2></div>
+        <table id="log">{self.buffer_unstable or '<tr><td>None</td></tr>'}</table>
+        <div id="subtitle"><h2>Successful</h2></div>
+        <table id="log">{self.buffer_success or '<tr><td>None</td></tr>'}</table>
     </div>
 </div>
 </body>
@@ -327,7 +455,6 @@ class SMTPOutput(Output):
 
     def __init__(self, options: dict):
         self.has_unstable = False
-        self.html = HTMLOutput()
         self.text = TextOutput()
 
         if 'when' not in options:
@@ -335,6 +462,8 @@ class SMTPOutput(Output):
         elif not isinstance(options['when'], str) or options['when'] not in ['always', 'failed', 'successful']:
             raise RuntimeError('Failed to configure STMP output - <when> field should be either <always>, <failed>'
                                'or <successful>')
+
+        self.html = MailHTMLOutput(options['when'])
 
         if 'from' not in options:
             options['from'] = HostApi.username() + '@' + HostApi.name()
@@ -421,11 +550,12 @@ class SMTPOutput(Output):
         self.text.on_complete(any_failed)
 
         message = MIMEMultipart('alternative')
-        message['Subject'] = Header('%smoonspec test result, suite %s, host %s, at %s' % (
+        message['Subject'] = Header('%smoonspec spec %s on %s, suite %s, at %s' % (
             '[FAILED] ' if any_failed else ('[UNSTABLE] ' if self.has_unstable else '[OK] '),
-            _MOONSPEC_RUNTIME_STATE.suite_name,
+            'failed ' if any_failed else ('unstable ' if self.has_unstable else 'success '),
             HostApi.name(),
-            date_now_format()
+            _MOONSPEC_RUNTIME_STATE.suite_name,
+            date_now_readable_format()
         ), 'utf-8')
         message['From'] = self.sender
 

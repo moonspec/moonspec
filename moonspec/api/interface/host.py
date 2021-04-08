@@ -120,16 +120,16 @@ class HostApi:
         return (l1 / cpu_count) * 100, (l5 / cpu_count) * 100, (l15 / cpu_count) * 100
 
     @staticmethod
-    def load_1_above(percent_threshold: float):
+    def load_1_above(percent_threshold: float) -> bool:
         l1p, _, _ = HostApi.load_avg_percent()
         return l1p > percent_threshold
 
     @staticmethod
-    def load_5_above(percent_threshold: float):
+    def load_5_above(percent_threshold: float) -> bool:
         _, l5p, _ = HostApi.load_avg_percent()
         return l5p > percent_threshold
 
     @staticmethod
-    def load_15_above(percent_threshold: float):
+    def load_15_above(percent_threshold: float) -> bool:
         _, _, l15p = HostApi.load_avg_percent()
         return l15p > percent_threshold
